@@ -13,7 +13,7 @@
                             <form method="POST" action="{{route('book')}}">
                                 @csrf
                                 <input type="hidden" name="booking_date" value="{{$booking_date}}">
-                                <input type="hidden" name="select_time" value="{{$select_time}}">
+                                <input type="hidden" name="start_time" value="{{$start_time}}">
                                 <input type="hidden" name="no_of_person" value="{{$no_of_person}}">
                                 <input type="hidden" name="table_id" value="{{$table->id}}">
                                 <button class="btn btn-primary">Book</button>

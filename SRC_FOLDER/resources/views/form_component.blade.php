@@ -14,12 +14,12 @@
         </div>
 
         <div class="col-md-4 mb-3">
-            <label for="select_time">Select Time</label>
-            <select class="form-control" name="select_time" id="select_time">
+            <label for="start_time">Select Time</label>
+            <select class="form-control" name="start_time" id="start_time">
                 <option selected name="">Select Time</option>
                 @foreach (\Carbon\CarbonInterval::minutes(15)->toPeriod('08:00', '20:00') as $date)
                     <option value="{{$date->format('H:i')}}"
-                        {{$select_time??'' === $date->format('H:i') ? 'selected' : ''}}
+                        {{($start_time??'') === $date->format('H:i') ? 'selected' : ''}}
                     >{{$date->format('H:i')}}</option>
                 @endforeach
             </select>
