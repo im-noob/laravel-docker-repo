@@ -49,6 +49,11 @@ class BookingController extends Controller
         $end_time = Carbon::parse($request->booking_date . $request->start_time)->addHour();
 
         $booking = new Booking();
+        $booking->first_name = $request->first_name;
+        $booking->last_name = $request->last_name;
+        $booking->email = $request->email;
+        $booking->phone_no = $request->phone_no;
+
         $booking->booking_date = $request->booking_date;
         $booking->start_time = $start_time;
         $booking->end_time = $end_time;
