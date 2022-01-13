@@ -31,7 +31,16 @@ class BookingController extends Controller
         $past_time = false;
         $two_horus_before = false;
         $hours_left = Carbon::now()->diffInHours($start_time, false);
-//        dd($hours_left);
+
+        /*If it's sunday*/
+        if ($start_time->dayOfWeek === Carbon::SUNDAY) {
+            $closed_time = true;
+        }
+        /*If it's saturday*/
+        if ($start_time->dayOfWeek === Carbon::SATURDAY && $end_time->hour > 15) {
+            $closed_time = true;
+        }
+
         if ($hours_left < 0) {
             $not_allowed = true;
             $err_message = "Select future date and time. ";
@@ -45,9 +54,7 @@ class BookingController extends Controller
                     Sunday 8 AM to 8 PM";
         }
         if ($not_allowed) {
-            $tables = [];
-            redirect()->route('index')->with('error','Booking Successful.');
-            return back()->with('error',$err_message??'');
+            return redirect()->route('index')->with('error',$err_message??'');
         }
 
 
