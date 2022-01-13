@@ -14,6 +14,16 @@
 <body>
 <div class="container">
     <div>
+        @if(session()->has('success'))
+            <div class="alert alert-success mt-3" role="alert">
+                {{session()->get('success')}}
+            </div>
+        @endif
+        @if(session()->has('error'))
+            <div class="alert alert-danger mt-3" role="alert">
+                {{session()->get('error')}}
+            </div>
+        @endif
         @yield('content')
     </div>
 </div>
