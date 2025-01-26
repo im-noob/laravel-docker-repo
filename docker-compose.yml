@@ -1,4 +1,5 @@
-version: "3.7"
+---
+
 services:
   app:
     build:
@@ -8,18 +9,22 @@ services:
       context: ./
       dockerfile: Dockerfile
     image: laravel
-    container_name: laravel-temp-app
+    container_name: laravel-app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./SRC_FOLDER:/var/www
     networks:
       - laravel
+#    depends_on:
+#      - mysql
+#      - init
+#    command: php-fpm # Ensures the main container runs PHP after the init tasks are done
 
   mysql:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
-    container_name: laravel-temp-mysql
+    container_name: laravel-mysql
     restart: unless-stopped
     tty: true
     ports:
@@ -40,7 +45,7 @@ services:
 
   nginx:
     image: nginx:stable-alpine
-    container_name: laravel-temp-nginx
+    container_name: laravel-nginx
     restart: unless-stopped
     ports:
       - 8000:80
@@ -54,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: laravel-temp-php
+    container_name: laravel-php
     volumes:
       - ./SRC_FOLDER:/var/www
       - ./docker-compose/php/php.ini:/usr/local/etc/php/conf.d/local.ini
@@ -67,7 +72,7 @@ services:
 
   adminer_container:
     image: adminer:latest
-    container_name: laravel-temp-adminer
+    container_name: laravel-adminer
     environment:
       ADMINER_DEFAULT_SERVER: mysql
 #      ADMINER_DESIGN: galkaev
@@ -80,7 +85,7 @@ services:
     depends_on:
       - mysql
     image: phpmyadmin/phpmyadmin
-    container_name: laravel-temp-phpmyadmin
+    container_name: laravel-phpmyadmin
     restart: always
     ports:
       - 4442:80
@@ -90,7 +95,26 @@ services:
 
     networks:
       - laravel
-
+#
+#  init:
+#    image: laravel
+#    container_name: laravel-init
+#    depends_on:
+#      - mysql
+#    working_dir: /var/www
+#    volumes:
+#      - ./SRC_FOLDER:/var/www
+#    networks:
+#      - laravel
+#    entrypoint: >
+#      sh -c "
+#      echo 'Database is ready!';
+#      composer install &&
+#      php artisan migrate --no-interaction --force &&
+#      echo 'Initialization complete!';
+#      exit 0;
+#      "
+#    restart: "no" # Ensure this container exits after running the tasks
 
 networks:
   laravel:

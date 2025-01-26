@@ -1,4 +1,4 @@
-FROM php:7.2-fpm
+FROM php:fpm
 
 # Arguments defined in docker-compose.yml
 #ARG user
@@ -14,8 +14,10 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libpng-dev \
+    libjpeg-dev \
     libonig-dev \
     libxml2-dev \
+    libzip-dev \
     zip \
     unzip
 
