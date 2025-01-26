@@ -32,12 +32,13 @@ services:
     volumes:
       - ./docker-compose/mysql/my.cnf:/etc/mysql/my.cnf
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-#      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_DATABASE: ${DB_DATABASE}          # Name of your database
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}     # Root password for MySQL
+      MYSQL_USER: ${DB_USERNAME}              # Regular database user (DO NOT set to root)
+      MYSQL_PASSWORD: ${DB_PASSWORD}          # Password for the regular user
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
+      MYSQL_ROOT_HOST: '%'                    # Allow root connections from any host
 #    volumes:
 #      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
@@ -95,26 +96,28 @@ services:
 
     networks:
       - laravel
-#
-#  init:
-#    image: laravel
-#    container_name: laravel-init
-#    depends_on:
-#      - mysql
-#    working_dir: /var/www
-#    volumes:
-#      - ./SRC_FOLDER:/var/www
-#    networks:
-#      - laravel
-#    entrypoint: >
-#      sh -c "
-#      echo 'Database is ready!';
-#      composer install &&
-#      php artisan migrate --no-interaction --force &&
-#      echo 'Initialization complete!';
-#      exit 0;
-#      "
-#    restart: "no" # Ensure this container exits after running the tasks
+
+  init:
+    image: laravel
+    container_name: laravel-init
+    depends_on:
+      - mysql
+    working_dir: /var/www
+    volumes:
+      - ./SRC_FOLDER:/var/www
+    networks:
+      - laravel
+    entrypoint: >
+      sh -c "
+         echo 'Waiting for 1 minute to ensure MySQL is ready...';
+         sleep 60 &&
+         echo 'Proceeding with initialization...' &&
+         composer install &&
+         php artisan migrate --no-interaction --force &&
+         echo 'Initialization complete!';
+         exit 0;
+      "
+    restart: "no" # Ensure this container exits after running the tasks
 
 networks:
   laravel:
