@@ -21,6 +21,10 @@ RUN apt-get update && apt-get install -y \
     zip \
     unzip
 
+# Install and configure Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -48,6 +52,9 @@ RUN mkdir -p /home/$user/.composer && \
 
 # Set working directory
 WORKDIR /var/www
+
+# Create xdebug log directory and set permissions
+RUN mkdir -p /tmp && chmod 777 /tmp
 
 USER $user
 
