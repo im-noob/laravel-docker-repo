@@ -15,11 +15,17 @@ RUN apt-get update && apt-get install -y \
     curl \
     libpng-dev \
     libjpeg-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
     zip \
-    unzip
+    unzip \
+    autoconf \
+    build-essential \
+    libtool \
+    pkg-config
 
 # Install and configure Xdebug
 RUN pecl install xdebug \
@@ -29,11 +35,10 @@ RUN pecl install xdebug \
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
+RUN docker-php-ext-configure gd --with-jpeg --with-freetype
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
 RUN docker-php-ext-install zip exif pcntl bcmath
-
-RUN docker-php-ext-configure gd
 
 # Install Redis extension
 #RUN pecl install redis && docker-php-ext-enable redis

@@ -36,6 +36,7 @@ services:
     ports:
       - ${APP_PORT_MYSQL}:3306
     volumes:
+      - mysql_data:/var/lib/mysql
       - ./docker-compose/mysql/my.cnf:/etc/mysql/my.cnf
     environment:
       MYSQL_DATABASE: ${DB_DATABASE}          # Name of your database
@@ -45,8 +46,6 @@ services:
       SERVICE_TAGS: dev
       SERVICE_NAME: mysql
       MYSQL_ROOT_HOST: '%'                    # Allow root connections from any host
-#    volumes:
-#      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
       - laravel
 
@@ -128,7 +127,7 @@ services:
          sleep 60 &&
          echo 'Proceeding with initialization...' &&
          composer install &&
-         php artisan migrate --no-interaction --force &&
+         php artisan migrate &&
          echo 'Initialization complete!';
          exit 0;
       "
@@ -137,3 +136,6 @@ services:
 networks:
   laravel:
     driver: bridge
+
+volumes:
+  mysql_data:
