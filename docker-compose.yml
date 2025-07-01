@@ -133,6 +133,23 @@ services:
       "
     restart: "no" # Ensure this container exits after running the tasks
 
+  queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - mysql
+    command: php artisan queue:work --queue=menu-processing --sleep=3 --tries=3 --max-time=3600
+    environment:
+      - QUEUE_CONNECTION=database
+
 networks:
   laravel:
     driver: bridge
