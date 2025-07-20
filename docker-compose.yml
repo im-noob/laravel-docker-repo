@@ -17,6 +17,7 @@ services:
       - ./docker-compose/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     networks:
       - laravel
+      - shared-network
     depends_on:
       - mysql
       - init
@@ -150,9 +151,62 @@ services:
     environment:
       - QUEUE_CONNECTION=database
 
+  asset-generation-queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-asset-generation-queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - mysql
+    command: php artisan queue:work --queue=asset-generation --sleep=5 --tries=3 --max-time=3600
+    environment:
+      - QUEUE_CONNECTION=database
+
+  scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-scheduler
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - mysql
+    command: php artisan schedule:work --verbose
+    environment:
+      - QUEUE_CONNECTION=database
+
+  sync-queue:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ${APP_NAME}-sync-queue
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./src:/var/www
+    networks:
+      - laravel
+    depends_on:
+      - mysql
+    command: php artisan queue:work --queue=sync --sleep=3 --tries=3 --max-time=3600
+    environment:
+      - QUEUE_CONNECTION=database
+
 networks:
   laravel:
     driver: bridge
+  shared-network:
+    external: true
 
 volumes:
   mysql_data:
